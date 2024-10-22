@@ -1,0 +1,6 @@
+*.out
+*.out.err
+*.log
+*.tar.gz
+venv
+opt
