@@ -4,3 +4,4 @@
 *.tar.gz
 venv
 opt
+__pycache__
