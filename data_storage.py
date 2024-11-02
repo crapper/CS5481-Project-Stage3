@@ -17,7 +17,7 @@ class DataString(str):
         return 4 + len(self.value.encode("utf-8"))
     
     def deserialize(data: bytes) -> "DataString":
-        length = int.from_bytes(data[:4], "big")
+        length = int.from_bytes(data[0:4], "big")
         value = data[4:4+length].decode("utf-8")
         return DataString(value)
 
@@ -39,7 +39,7 @@ class DataInt():
         return str(self.value)
 
 class DataPost:
-    def __init__(self, id: str, title: DataString, description: DataString, upvotes: DataInt, comments: DataInt):
+    def __init__(self, id: DataString, title: DataString, description: DataString, upvotes: DataString, comments: DataString):
         self.id = id
         self.title = title
         self.description = description
@@ -47,12 +47,12 @@ class DataPost:
         self.comments = comments
         
     def serialize(self) -> bytes:
-        payload = DataString(self.id).serialize() + self.title.serialize() + self.description.serialize() + self.upvotes.serialize() + self.comments.serialize()
+        payload = self.id.serialize() + self.title.serialize() + self.description.serialize() + self.upvotes.serialize() + self.comments.serialize()
         return len(payload).to_bytes(4, "big") + payload
     
     @property
     def serialize_len(self) -> int:
-        return 4 + 4 + len(self.id) + 4 + len(self.title) + 4 + len(self.description) + 8
+        return 4 + self.id.serialize_len + self.title.serialize_len + self.description.serialize_len + self.upvotes.serialize_len + self.comments.serialize_len
     
     def deserialize(data: bytes) -> "DataPost":
         payload = data[4:]
@@ -62,9 +62,9 @@ class DataPost:
         payload = payload[title.serialize_len:]
         description: DataString = DataString.deserialize(payload)
         payload = payload[description.serialize_len:]
-        upvotes: DataInt = DataInt.deserialize(payload)
+        upvotes: DataString = DataString.deserialize(payload)
         payload = payload[upvotes.serialize_len:]
-        comments: DataInt = DataInt.deserialize(payload)
+        comments: DataString = DataString.deserialize(payload)
         return DataPost(id, title, description, upvotes, comments)
     
     def __str__(self) -> str:
