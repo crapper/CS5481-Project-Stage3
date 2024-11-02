@@ -39,20 +39,20 @@ class DataInt():
         return str(self.value)
 
 class DataPost:
-    def __init__(self, id: str, title: DataString, image_url: DataString, upvotes: DataInt, comments: DataInt):
+    def __init__(self, id: str, title: DataString, description: DataString, upvotes: DataInt, comments: DataInt):
         self.id = id
         self.title = title
-        self.image_url = image_url
+        self.description = description
         self.upvotes = upvotes
         self.comments = comments
         
     def serialize(self) -> bytes:
-        payload = DataString(self.id).serialize() + self.title.serialize() + self.image_url.serialize() + self.upvotes.serialize() + self.comments.serialize()
+        payload = DataString(self.id).serialize() + self.title.serialize() + self.description.serialize() + self.upvotes.serialize() + self.comments.serialize()
         return len(payload).to_bytes(4, "big") + payload
     
     @property
     def serialize_len(self) -> int:
-        return 4 + 4 + len(self.id) + 4 + len(self.title) + 4 + len(self.image_url) + 8
+        return 4 + 4 + len(self.id) + 4 + len(self.title) + 4 + len(self.description) + 8
     
     def deserialize(data: bytes) -> "DataPost":
         payload = data[4:]
@@ -60,15 +60,15 @@ class DataPost:
         payload = payload[id.serialize_len:]    
         title: DataString = DataString.deserialize(payload)    
         payload = payload[title.serialize_len:]
-        image_url: DataString = DataString.deserialize(payload)
-        payload = payload[image_url.serialize_len:]
+        description: DataString = DataString.deserialize(payload)
+        payload = payload[description.serialize_len:]
         upvotes: DataInt = DataInt.deserialize(payload)
         payload = payload[upvotes.serialize_len:]
         comments: DataInt = DataInt.deserialize(payload)
-        return DataPost(id, title, image_url, upvotes, comments)
+        return DataPost(id, title, description, upvotes, comments)
     
     def __str__(self) -> str:
-        return f"DataPost(id={self.id}, title={self.title}, image_url={self.image_url}, upvotes={self.upvotes}, comments={self.comments})"
+        return f"DataPost(id={self.id}, title={self.title}, description={self.description}, upvotes={self.upvotes}, comments={self.comments})"
     
 class DataGrid:
     def __init__(self, posts: List[DataPost]):
