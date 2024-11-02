@@ -1,4 +1,4 @@
-Install standalone python 3.10
+## Prerequisites
 
 ```sh
 wget https://github.com/25077667/standalone-python/releases/download/release-2024-04-29/release-3.10-x86_64.tar.gz
@@ -17,4 +17,19 @@ chmod 777 ./venv/bin/activate
 
 # exit env when activate
 deactivate
+```
+
+## Run
+
+```sh
+screen -dmS memes_processor bash -c 'cd /home/bsft21/chlum4/CS5481-Project-Stage3 && source ./venv/bin/activate && python main.py > memes_processor.log 2>&1'
+
+# check if screen is running
+screen -ls
+
+# attach to screen
+screen -r memes_processor
+
+# detach from screen
+Ctrl + A + D
 ```
