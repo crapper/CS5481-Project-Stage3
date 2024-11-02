@@ -9,7 +9,7 @@ import requests
 from PIL import Image
 from typing import List, Set
 from transformers import AutoProcessor, AutoModelForPreTraining
-from data_storage import DataInt, DataPost, DataString, append_post
+from data_storage import DataInt, DataPost, DataString, append_post, read_data_grid_ids
 from transformers.models.mllama.processing_mllama import MllamaProcessor
 from transformers.models.mllama.modeling_mllama import MllamaForConditionalGeneration
 
@@ -46,6 +46,7 @@ def safe_string(value: str) -> str:
             str_bytes = str_bytes[:-1]
     return ""
 
+data_ids = read_data_grid_ids("9gag-memes-dataset-stage3.bin")
 
 j = 0
 for index, row in stage1_df.iterrows():
@@ -57,8 +58,10 @@ for index, row in stage1_df.iterrows():
     image_url = row["image_url"]
     upvotes = int(row["upvotes"])
     comments = int(row["comments"])
-
-    if image_url == "<video-content>":
+    
+    if id in data_ids:
+        print(f"Skipping {id} because it is already processed")
+    elif image_url == "<video-content>":
         print(f"Skipping {id} because it is a video")
     else:
         try:
@@ -97,5 +100,3 @@ for index, row in stage1_df.iterrows():
 # for post in data_grid.posts:
 #     print(post)
 
-# data_ids = read_data_grid_ids("9gag-memes-dataset-stage3.bin")
-# print(data_ids)
