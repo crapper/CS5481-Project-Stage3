@@ -5,6 +5,7 @@ os.environ["HF_TOKEN"] = "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"
 import time
 import pandas as pd
 import requests
+import logging
 
 from PIL import Image
 from typing import List, Set
@@ -19,6 +20,10 @@ processor: MllamaProcessor = AutoProcessor.from_pretrained(
 model: MllamaForConditionalGeneration = AutoModelForPreTraining.from_pretrained(
     "unsloth/Llama-3.2-11B-Vision-Instruct-bnb-4bit"
 )
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.FileHandler("memes_processor.log"))
 
 
 def read_tsv(tsv_file_path: str) -> pd.DataFrame:
@@ -54,7 +59,7 @@ else:
 j = 0
 for index, row in stage1_df.iterrows():
     start_time = time.time()
-    print(f"[{time.strftime('%H:%M:%S', time.localtime(start_time))}] Processing {j}th post")
+    logger.info(f"[{time.strftime('%H:%M:%S', time.localtime(start_time))}] Processing {j}th post")
 
     id = row["id"]
     title = row["title"]
@@ -63,9 +68,9 @@ for index, row in stage1_df.iterrows():
     comments = row["comments"]
     
     if id in data_ids:
-        print(f"Skipping {id} because it is already processed")
+        logger.info(f"Skipping {id} because it is already processed")
     elif image_url == "<video-content>":
-        print(f"Skipping {id} because it is a video")
+        logger.info(f"Skipping {id} because it is a video")
     else:
         try:
             image = Image.open(requests.get(image_url, stream=True).raw)
@@ -86,11 +91,11 @@ for index, row in stage1_df.iterrows():
                 ),
             )
 
-            print(f"Processed {id} in {time.time() - start_time} seconds")
+            logger.info(f"Processed {id} in {time.time() - start_time} seconds")
         except KeyboardInterrupt:
             break
         except Exception as e:
-            print(e)
+            logger.error(e)
 
     j += 1
 
