@@ -9,17 +9,16 @@ import requests
 from PIL import Image
 from typing import List, Set
 from transformers import AutoProcessor, AutoModelForPreTraining
-from data_storage import (
-    DataInt,
-    DataPost,
-    DataString,
-    append_post,
-    read_data_grid,
-    read_data_grid_ids,
-)
+from data_storage import DataInt, DataPost, DataString, append_post
+from transformers.models.mllama.processing_mllama import MllamaProcessor
+from transformers.models.mllama.modeling_mllama import MllamaForConditionalGeneration
 
-processor = AutoProcessor.from_pretrained("unsloth/Llama-3.2-11B-Vision-Instruct-bnb-4bit")
-model = AutoModelForPreTraining.from_pretrained("unsloth/Llama-3.2-11B-Vision-Instruct-bnb-4bit")
+processor: MllamaProcessor = AutoProcessor.from_pretrained(
+    "unsloth/Llama-3.2-11B-Vision-Instruct-bnb-4bit"
+)
+model: MllamaForConditionalGeneration = AutoModelForPreTraining.from_pretrained(
+    "unsloth/Llama-3.2-11B-Vision-Instruct-bnb-4bit"
+)
 
 
 def read_tsv(tsv_file_path: str) -> pd.DataFrame:
@@ -33,6 +32,19 @@ def read_tsv(tsv_file_path: str) -> pd.DataFrame:
 
 
 stage1_df = read_tsv("9gag-memes-dataset-stage1-10k.tsv")
+
+
+def safe_string(value: str) -> str:
+    """
+    Decode the string by removing the last byte until it is valid.
+    """
+    str_bytes = value.encode("utf-8")
+    while len(str_bytes) > 0:
+        try:
+            return str_bytes.decode("utf-8")
+        except UnicodeDecodeError:
+            str_bytes = str_bytes[:-1]
+    return ""
 
 
 j = 0
@@ -55,7 +67,7 @@ for index, row in stage1_df.iterrows():
             inputs = processor(image, prompt, return_tensors="pt").to(model.device)
             output = model.generate(**inputs, max_new_tokens=200)
 
-            description = processor.decode(output[0]).replace(prompt, "")
+            description = safe_string(processor.decode(output[0]).replace(prompt, ""))
 
             append_post(
                 "9gag-memes-dataset-stage3.bin",
