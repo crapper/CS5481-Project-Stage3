@@ -22,7 +22,7 @@ deactivate
 ## Run
 
 ```sh
-screen -dmS memes_processor bash -c 'cd /home/bsft21/chlum4/CS5481-Project-Stage3 && source ./venv/bin/activate && python main.py > memes_processor.log 2>&1'
+screen -dmS memes_processor bash -c 'cd /home/bsft21/chlum4/CS5481-Project-Stage3 && source ./venv/bin/activate && python main.py'
 
 # check if screen is running
 screen -ls
