@@ -19,6 +19,8 @@ def read_data_grid(file_path: str) -> DataGrid:
                 data = data[4 + serialized_len :]
             finally:
                 i += 1
+
+        print(f"Read {len(posts)} posts")
         return DataGrid(posts)
 
 
