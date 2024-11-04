@@ -1,6 +1,6 @@
 import os
 
-from data_storage import DataGrid, DataPost
+from core.data_storage import DataGrid, DataPost
 
 
 def read_data_grid(file_path: str) -> DataGrid:

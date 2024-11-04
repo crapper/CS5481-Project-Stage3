@@ -2,6 +2,7 @@ python -m venv venv
 source venv/bin/activate
 pip list
 pip install --upgrade pip
+pip install --editable ../../src
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 pip install --upgrade git+https://github.com/huggingface/transformers
 pip install pillow
@@ -11,5 +12,3 @@ pip install 'accelerate>=0.26.0'
 pip install pandas
 
 pip list
-
-# pip install 

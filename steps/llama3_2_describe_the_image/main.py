@@ -10,7 +10,7 @@ import logging
 from PIL import Image
 from typing import List, Set
 from transformers import AutoProcessor, AutoModelForPreTraining
-from data_storage import DataPost, DataString, append_post, read_data_grid_ids
+from core.data_storage import DataPost, DataString, append_post, read_data_grid_ids
 from transformers.models.mllama.processing_mllama import MllamaProcessor
 from transformers.models.mllama.modeling_mllama import MllamaForConditionalGeneration
 
@@ -36,7 +36,7 @@ def read_tsv(tsv_file_path: str) -> pd.DataFrame:
         )
 
 
-stage1_df = read_tsv("9gag-memes-dataset-stage1-10k.tsv")
+stage1_df = read_tsv("../../results/9gag-memes-dataset-stage1-10k.tsv")
 
 
 def safe_string(value: str) -> str:

@@ -1,4 +1,4 @@
-from data_storage import DataPost, DataString, append_post
+from core.data_storage import DataPost, DataString, append_post
 
 
 post = DataPost(DataString("id1"), DataString("title"), DataString("image_url!"), DataString("100"), DataString("20"))
