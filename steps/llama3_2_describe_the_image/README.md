@@ -29,6 +29,10 @@ python ./tail.py
 ```sh
 cd ./steps/llama3_2_describe_the_image
 
+# See available GPUs
+nvidia-smi
+
+# IMPORTANT: Set the CUDA_VISIBLE_DEVICES environment variable to the GPU you want to use
 screen -dmS memes_processor bash -c 'export CUDA_VISIBLE_DEVICES="1" && source ./venv/bin/activate && python main.py'
 
 # check if screen is running
