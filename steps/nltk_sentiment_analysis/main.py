@@ -33,7 +33,7 @@ data_grid = read_data_grid(file_path)
 
 logger.info("Processing posts...")
 
-output = {'id': [], 'sentiment_score': [], 'upvote': []}
+output = {'id': [], 'sentiment_score': [], 'upvotes': []}
 
 def string_to_int(value: str) -> int:
     try:
@@ -64,7 +64,7 @@ for post in data_grid.posts:
     sentiment_score = sia.polarity_scores(" ".join(filtered_tokens))['compound']
     output['id'].append(post.id.value)
     output['sentiment_score'].append(sentiment_score)
-    output['upvote'].append(string_to_int(post.upvotes.value))
+    output['upvotes'].append(string_to_int(post.upvotes.value))
 
     logger.info(f"Processed {post.id} ({i+1}/{len(data_grid.posts)})")
 
