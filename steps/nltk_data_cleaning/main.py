@@ -32,7 +32,7 @@ logger.info("Processing posts...")
 
 i = 0
 for post in data_grid.posts:
-    tokens: list[str] = nltk.word_tokenize(post.description.value.lower())
+    tokens: list[str] = nltk.word_tokenize(post.content.value.lower())
 
     word_counts = {}
     filtered_tokens = []

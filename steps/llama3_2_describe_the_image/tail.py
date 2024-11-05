@@ -38,7 +38,7 @@ def display_last_posts():
         for post in posts[-10:]:
             print(f"ID: {post.id.value}")
             print(f"Title: {post.title.value}")
-            print(f"Description: {post.description.value}")
+            print(f"Description: {post.content.value}")
             print(f"Upvotes: {post.upvotes.value}")
             print(f"Comments: {post.comments.value}")
             print("-" * 50)
