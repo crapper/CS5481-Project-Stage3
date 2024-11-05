@@ -51,8 +51,8 @@ def safe_string(value: str) -> str:
             str_bytes = str_bytes[:-1]
     return ""
 
-if os.path.exists("9gag-memes-dataset-stage3.bin"):
-    data_ids = read_data_grid_ids("9gag-memes-dataset-stage3.bin")
+if os.path.exists("9gag-memes-llama-description.bin"):
+    data_ids = read_data_grid_ids("9gag-memes-llama-description.bin")
 else:
     data_ids = []
 
@@ -81,7 +81,7 @@ for index, row in stage1_df.iterrows():
             description = safe_string(processor.decode(output[0]).replace(prompt, ""))
 
             append_post(
-                "9gag-memes-dataset-stage3.bin",
+                "9gag-memes-llama-description.bin",
                 DataPost(
                     DataString(id),
                     DataString(title),
@@ -101,10 +101,10 @@ for index, row in stage1_df.iterrows():
 
 # print(stage1_df.head())
 
-# append_post("9gag-memes-dataset-stage3.bin", DataPost(DataString("id1"), DataString("title1"), DataString("image_url1"), DataInt(100), DataInt(20)))
-# append_post("9gag-memes-dataset-stage3.bin", DataPost(DataString("id2"), DataString("title2"), DataString("image_url2"), DataInt(101), DataInt(21)))
+# append_post("9gag-memes-llama-description.bin", DataPost(DataString("id1"), DataString("title1"), DataString("image_url1"), DataInt(100), DataInt(20)))
+# append_post("9gag-memes-llama-description.bin", DataPost(DataString("id2"), DataString("title2"), DataString("image_url2"), DataInt(101), DataInt(21)))
 
-# data_grid = read_data_grid("9gag-memes-dataset-stage3.bin")
+# data_grid = read_data_grid("9gag-memes-llama-description.bin")
 # for post in data_grid.posts:
 #     print(post)
 

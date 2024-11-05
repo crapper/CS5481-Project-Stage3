@@ -13,7 +13,7 @@ nltk.download("words")
 nltk.download("stopwords")
 
 logger.info("Initializing nltk...")
-custom_words = set(["image"])
+custom_words = set(["image", "caption", "man", "text"])
 words = set(words.words())
 stop_words = set(stopwords.words("english"))
 
