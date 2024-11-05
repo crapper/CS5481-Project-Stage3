@@ -12,6 +12,6 @@ with open(file_path, "r", encoding="utf-8") as file:
 
 wordcloud = WordCloud(width=1024, height=1024, background_color="white").generate(text)
 
-file_name = file_path.split("/")[-1]
+file_name = file_path.split("/")[-1].split(".")[0]
 
 wordcloud.to_file(f"{file_name}.png")

@@ -17,5 +17,5 @@ cd ./steps/wordcloud
 
 source ./venv/bin/activate
 
-python ./main.py ../../results/9gag-memes-dataset-stage3-7k-words-cleaned.txt
+python ./main.py ../../results/9gag-memes-llama-description-7k-words-cleaned.txt
 ```

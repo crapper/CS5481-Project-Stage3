@@ -17,5 +17,5 @@ cd ./steps/nltk_data_cleaning
 
 source ./venv/bin/activate
 
-python ./main.py
+python ./main.py ../../results/9gag-memes-llama-description-7k.bin
 ```

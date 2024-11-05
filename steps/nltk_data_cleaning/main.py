@@ -1,8 +1,16 @@
 import logging
+import sys
 from core.data_storage import read_data_grid
 import nltk
 from nltk.corpus import stopwords
 from nltk.corpus import words
+
+if len(sys.argv) != 2:
+    print("Usage: python main.py <file_path>")
+    sys.exit(1)
+
+file_path = sys.argv[1]
+file_name = file_path.split("/")[-1].split(".")[0]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,7 +26,7 @@ words = set(words.words())
 stop_words = set(stopwords.words("english"))
 
 logger.info("Reading data...")
-data_grid = read_data_grid("../../results/9gag-memes-dataset-stage3-7k.bin")
+data_grid = read_data_grid(file_path)
 
 logger.info("Processing posts...")
 
@@ -36,7 +44,7 @@ for post in data_grid.posts:
             elif word_counts[word] < 10:
                 filtered_tokens.append(word)
 
-    with open("./9gag-memes-dataset-stage3-7k-words-cleaned.txt", "a") as file:
+    with open(f"./{file_name}-words-cleaned.txt", "a") as file:
         file.write(" ".join(filtered_tokens) + "\n")
 
     logger.info(f"Processed {post.id} ({i+1}/{len(data_grid.posts)})")
