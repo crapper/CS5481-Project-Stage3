@@ -139,6 +139,21 @@ def read_data_grid_ids(file_path: str) -> Set[str]:
         return ids
 
 
+def read_data_post_by_id(file_path: str, post_id: str) -> DataPost:
+    with open(file_path, "rb") as file:
+        data = file.read()
+        while data:
+            # read length of the data
+            length = int.from_bytes(data[:4], "big")
+            # deserialize the first string
+            id = DataString.deserialize(data[4:])
+            if id.value == post_id:
+                return DataPost.deserialize(data)
+            data = data[4:]
+            data = data[length:]
+        raise ValueError(f"Post {post_id} not found")
+
+
 # # test serialize and deserialize
 # integer = DataInt(100)
 # serialized = integer.serialize()
