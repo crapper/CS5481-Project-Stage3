@@ -136,7 +136,7 @@ class Consumer:
                 logger.info(f"{log_prefix()} Processing {j}th post")
 
                 post: ImagePost = self.q.get()
-                prompt = "what is the meaning of this image"
+                prompt = f"what is the meaning of this meme? post title: {post.title}"
                 response = pipe((prompt, post.image))
 
                 meaning = safe_string(response.text)
