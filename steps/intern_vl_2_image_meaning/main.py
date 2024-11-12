@@ -59,8 +59,8 @@ logger.info(f"{log_prefix()} Reading tsv file...")
 stage1_df = read_tsv("../../results/9gag-memes-dataset-stage1-10k.tsv")
 
 logger.info(f"{log_prefix()} Checking if data grid exists...")
-if os.path.exists("9gag-memes-intern-image-meaning.bin"):
-    data_ids = read_data_grid_ids("9gag-memes-intern-image-meaning.bin")
+if os.path.exists("9gag-memes-intern-image-meaning-7k.bin"):
+    data_ids = read_data_grid_ids("9gag-memes-intern-image-meaning-7k.bin")
 else:
     data_ids = []
 
@@ -142,7 +142,7 @@ class Consumer:
                 meaning = safe_string(response.text)
 
                 append_post(
-                    "9gag-memes-intern-image-meaning.bin",
+                    "9gag-memes-intern-image-meaning-7k.bin",
                     DataPost(
                         DataString(post.id),
                         DataString(post.title),

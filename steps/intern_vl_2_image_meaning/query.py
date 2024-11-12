@@ -22,7 +22,7 @@ def read_tsv(tsv_file_path: str) -> pd.DataFrame:
 
 stage1_df = read_tsv("../../results/9gag-memes-dataset-stage1-10k.tsv")
 
-post = read_data_post_by_id("9gag-memes-intern-image-meaning.bin", post_id)
+post = read_data_post_by_id("9gag-memes-intern-image-meaning-7k.bin", post_id)
 title = post.title
 post_url = f"https://9gag.com/gag/{post_id[10:]}"
 

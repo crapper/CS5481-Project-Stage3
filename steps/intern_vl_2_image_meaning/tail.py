@@ -27,7 +27,7 @@ def read_data_grid(file_path: str) -> DataGrid:
 def display_last_posts():
     try:
         # Read the data grid from the binary file
-        data_grid = read_data_grid("9gag-memes-intern-image-meaning.bin")
+        data_grid = read_data_grid("9gag-memes-intern-image-meaning-7k.bin")
 
         # Get all posts
         posts = data_grid.posts
