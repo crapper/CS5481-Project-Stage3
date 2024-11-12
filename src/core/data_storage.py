@@ -92,6 +92,90 @@ class DataPost:
         return f"DataPost(id={self.id}, title={self.title}, content={self.content}, upvotes={self.upvotes}, comments={self.comments})"
 
 
+class DataCategoryLinks:
+    def __init__(self, linked_categories: List[DataInt]):
+        self.linked_categories = linked_categories
+
+    def serialize(self) -> bytes:
+        payload = b"".join(category.serialize() for category in self.linked_categories)
+        return len(payload).to_bytes(4, "big") + payload
+
+    @property
+    def serialize_len(self) -> int:
+        return 4 + sum(category.serialize_len for category in self.linked_categories)
+
+    def deserialize(data: bytes) -> "DataCategoryLinks":
+        length = int.from_bytes(data[:4], "big")
+        payload = data[4 : 4 + length]
+        linked_categories = []
+        while payload:
+            linked_categories.append(DataInt.deserialize(payload))
+            payload = payload[4:]
+        return DataCategoryLinks(linked_categories)
+
+
+class DataCategoryLinksGrid:
+    def __init__(self, category_links: List[DataCategoryLinks]):
+        self.category_links = category_links
+
+    def serialize(self) -> bytes:
+        return b"".join(category_link.serialize() for category_link in self.category_links)
+
+    @property
+    def serialize_len(self) -> int:
+        return sum(category_link.serialize_len for category_link in self.category_links)
+
+    def deserialize(data: bytes) -> "DataCategoryLinksGrid":
+        category_links = []
+        while data:
+            category_link = DataCategoryLinks.deserialize(data)
+            category_links.append(category_link)
+            data = data[category_link.serialize_len :]
+        return DataCategoryLinksGrid(category_links)
+
+
+class DataCategory:
+    def __init__(self, uid: DataInt, name: DataString, count: DataInt):
+        self.uid = uid
+        self.name = name
+        self.count = count
+
+    def serialize(self) -> bytes:
+        return self.uid.serialize() + self.name.serialize() + self.count.serialize()
+
+    @property
+    def serialize_len(self) -> int:
+        return self.uid.serialize_len + self.name.serialize_len + self.count.serialize_len
+
+    def deserialize(data: bytes) -> "DataCategory":
+        uid = DataInt.deserialize(data)
+        payload = data[uid.serialize_len :]
+        name = DataString.deserialize(payload)
+        payload = payload[name.serialize_len :]
+        count = DataInt.deserialize(payload)
+        return DataCategory(uid, name, count)
+
+
+class DataCategorySet:
+    def __init__(self, categories: Set[DataCategory]):
+        self.categories = categories
+
+    def serialize(self) -> bytes:
+        return b"".join(category.serialize() for category in self.categories)
+
+    @property
+    def serialize_len(self) -> int:
+        return sum(category.serialize_len for category in self.categories)
+
+    def deserialize(data: bytes) -> "DataCategorySet":
+        categories = set()
+        while data:
+            category = DataCategory.deserialize(data)
+            categories.add(category)
+            data = data[category.serialize_len :]
+        return DataCategorySet(categories)
+
+
 class DataGrid:
     def __init__(self, posts: List[DataPost]):
         self.posts = posts
@@ -152,6 +236,28 @@ def read_data_post_by_id(file_path: str, post_id: str) -> DataPost:
             data = data[4:]
             data = data[length:]
         raise ValueError(f"Post {post_id} not found")
+
+
+def append_category_links(file_path: str, category_links: DataCategoryLinks):
+    append_to_file(file_path, category_links.serialize())
+
+
+def read_category_links_grid(file_path: str) -> DataCategoryLinksGrid:
+    with open(file_path, "rb") as file:
+        data = file.read()
+        return DataCategoryLinksGrid.deserialize(data)
+
+
+def write_category_set(file_path: str, category_set: List[DataCategory]):
+    c = DataCategorySet(category_set)
+    with open(file_path, "wb") as file:
+        file.write(c.serialize())
+
+
+def read_category_set(file_path: str) -> DataCategorySet:
+    with open(file_path, "rb") as file:
+        data = file.read()
+        return DataCategorySet.deserialize(data)
 
 
 # # test serialize and deserialize
