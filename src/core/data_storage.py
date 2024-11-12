@@ -1,3 +1,4 @@
+import struct
 from typing import List, Set
 
 
@@ -34,6 +35,24 @@ class DataInt:
 
     def deserialize(data: bytes) -> "DataInt":
         return DataInt(int.from_bytes(data[:4], "big"))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+class DataFloat:
+    def __init__(self, value: float):
+        self.value = value
+
+    def serialize(self) -> bytes:
+        return struct.pack("f", self.value)
+
+    @property
+    def serialize_len(self) -> int:
+        return 4
+
+    def deserialize(data: bytes) -> "DataFloat":
+        return DataFloat(struct.unpack("f", data)[0])
 
     def __str__(self) -> str:
         return str(self.value)
@@ -113,6 +132,9 @@ class DataCategoryLinks:
             payload = payload[4:]
         return DataCategoryLinks(linked_categories)
 
+    def __str__(self) -> str:
+        return f"DataCategoryLinks({self.linked_categories})"
+
 
 class DataCategoryLinksGrid:
     def __init__(self, category_links: List[DataCategoryLinks]):
@@ -155,6 +177,9 @@ class DataCategory:
         count = DataInt.deserialize(payload)
         return DataCategory(uid, name, count)
 
+    def __str__(self) -> str:
+        return f"DataCategory(uid={self.uid}, name={self.name}, count={self.count})"
+
 
 class DataCategorySet:
     def __init__(self, categories: Set[DataCategory]):
@@ -190,6 +215,47 @@ class DataGrid:
             posts.append(post)
             data = data[post.serialize_len :]
         return DataGrid(posts)
+
+
+class DataConnection:
+    def __init__(self, from_id: DataInt, to_id: DataInt, value: DataFloat):
+        self.from_id = from_id
+        self.to_id = to_id
+        self.value = value
+
+    def serialize(self) -> bytes:
+        return self.from_id.serialize() + self.to_id.serialize() + self.value.serialize()
+
+    @property
+    def serialize_len(self) -> int:
+        return self.from_id.serialize_len + self.to_id.serialize_len + self.value.serialize_len
+
+    def deserialize(data: bytes) -> "DataConnection":
+        from_id = DataInt.deserialize(data)
+        payload = data[from_id.serialize_len :]
+        to_id = DataInt.deserialize(payload)
+        payload = payload[to_id.serialize_len :]
+        value = DataFloat.deserialize(payload)
+        return DataConnection(from_id, to_id, value)
+
+    def __str__(self) -> str:
+        return f"DataConnection(from_id={self.from_id}, to_id={self.to_id}, value={self.value})"
+
+
+class DataConnectionGrid:
+    def __init__(self, connections: List[DataConnection]):
+        self.connections = connections
+
+    def serialize(self) -> bytes:
+        return b"".join(connection.serialize() for connection in self.connections)
+
+    def deserialize(data: bytes) -> "DataConnectionGrid":
+        connections = []
+        while data:
+            connection = DataConnection.deserialize(data)
+            connections.append(connection)
+            data = data[connection.serialize_len :]
+        return DataConnectionGrid(connections)
 
 
 def append_to_file(file_path: str, data: bytes):
@@ -260,11 +326,27 @@ def read_category_set(file_path: str) -> DataCategorySet:
         return DataCategorySet.deserialize(data)
 
 
+def append_connections(file_path: str, connections: List[DataConnection]):
+    append_to_file(file_path, b"".join(connection.serialize() for connection in connections))
+
+
+def read_connection_grid(file_path: str) -> DataConnectionGrid:
+    with open(file_path, "rb") as file:
+        data = file.read()
+        return DataConnectionGrid.deserialize(data)
+
+
 # # test serialize and deserialize
 # integer = DataInt(100)
 # serialized = integer.serialize()
 # # print(serialized)
 # deserialized = DataInt.deserialize(serialized)
+# print(deserialized)
+
+# float = DataFloat(100.1)
+# serialized = float.serialize()
+# # print(serialized)
+# deserialized = DataFloat.deserialize(serialized)
 # print(deserialized)
 
 # string = DataString("hello")
