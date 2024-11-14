@@ -16,10 +16,9 @@ from core.data_storage import (
     read_data_grid,
 )
 
-
-MAGIC_NUM_1 = 2000
 MAGIC_NUM_2 = 40
 MAGIC_NUM_3 = 4
+# BLACKLISTED_POSTS = [1713]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -43,17 +42,15 @@ categories_sorted: List[DataCategory] = sorted(
     list(categories_set_raw.categories), key=lambda x: x.count.value, reverse=True
 )
 
-# top 30 categories, except for the first 2 (which are "meme" and "humor")
-categories_top_30: List[DataCategory] = categories_sorted[2:32]
+# top 50 categories, except for the first 2 (which are "meme" and "humor")
+categories_top_50: List[DataCategory] = categories_sorted[2:52]
+# logger.info(f"{log_prefix()} Categories top 50: {[category.name.value for category in categories_top_50]}")
 
 logger.info(f"{log_prefix()} Initializing categories to posts")
 
 categories_to_posts: Dict[int, List[int]] = {}
 i = 0
 for links in categories_links_grid.category_links:
-    if len(links.linked_categories) > MAGIC_NUM_1:
-        continue
-
     for category_id in links.linked_categories:
         if category_id.value not in categories_to_posts:
             categories_to_posts[category_id.value] = []
@@ -82,7 +79,7 @@ def get_post_categories(post_index: int) -> List[str]:
     ]
 
 
-for category in categories_top_30:
+for category in categories_top_50:
     DG.add_node(category.name.value)
 
     post_indexes = (
@@ -91,17 +88,25 @@ for category in categories_top_30:
     for post_index in post_indexes:
         post = posts.posts[post_index]
         DG.add_edge(category.name.value, post.title.value)
-        attributes[post.title.value] = {
-            "categories": ", ".join(get_post_categories(post_index)),
-            "post_id": post.id.value,
-        }
 
     logger.info(f"{log_prefix()} Added {len(post_indexes)} posts to category {category.name.value}")
 
 # Dict[post_index, int], init with zero
 connection_counters: Dict[int, int] = {}
 for post_index in range(len(posts.posts)):
-    connection_counters[post_index] = 0
+
+    post = posts.posts[post_index]
+    if post.title == "nan":
+        connection_counters[post_index] = 999
+    else:
+        connection_counters[post_index] = 0
+
+        attributes[post.title.value] = {
+            "categories": ", ".join(get_post_categories(post_index)),
+            "post_id": post.id.value,
+            "url": f"https://9gag.com/gag/{post.id.value[10:]}",
+        }
+
 for post_index in range(len(posts.posts)):
     from_post = posts.posts[post_index]
     conns = connections_by_ids[post_index] if post_index in connections_by_ids else []
@@ -124,7 +129,7 @@ nx.set_node_attributes(DG, attributes)
 Sigma(DG, node_color="tag", node_label_size=DG.degree, node_size=DG.degree)
 
 current_folder = pathlib.Path(__file__).parent
-progressive_html = current_folder / "output.html"
+progressive_html = current_folder / "9gag-memes-network-graph.html"
 
 Sigma.write_html(
     DG,
@@ -133,11 +138,11 @@ Sigma.write_html(
     default_node_label_size=16,
     fullscreen=True,
     # label_rendered_size_threshold=30,
-    max_categorical_colors=30,
+    max_categorical_colors=50,
     node_border_color_from="node",
     node_color="louvain",
     node_metrics=["louvain"],
-    node_size_range=(3, 20),
+    node_size_range=(3, 30),
     node_size=DG.degree,
 )
 

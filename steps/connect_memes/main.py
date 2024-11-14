@@ -33,8 +33,8 @@ categories_sorted: List[DataCategory] = sorted(
     list(categories_set_raw.categories), key=lambda x: x.count.value, reverse=True
 )
 
-# top 30 categories
-categories_top_30: List[DataCategory] = categories_sorted[2:32]
+# top 50 categories
+categories_top_50: List[DataCategory] = categories_sorted[2:52]
 
 total_posts = len(links_grid.category_links)
 logger.info(f"{log_prefix()} Total posts: {total_posts}")
@@ -42,7 +42,7 @@ logger.info(f"{log_prefix()} Total posts: {total_posts}")
 # Calculate idf for each category
 logger.info(f"{log_prefix()} Calculating idf for each category...")
 idf = {}
-for category in categories_top_30:
+for category in categories_top_50:
     idf[category.uid.value] = math.log(
         (total_posts + 1) / (category.count.value + 1), total_posts + 1
     )

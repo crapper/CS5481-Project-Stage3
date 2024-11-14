@@ -13,6 +13,7 @@ print("Last 10 links:")
 for links in (links.category_links)[-10:]:
     print(", ".join([str(num.value) for num in links.linked_categories]))
 
-print("\nLast 10 categories:")
-for category in list(categories.categories)[-10:]:
+print("\nTop 50 categories:")
+categories_sorted = sorted(list(categories.categories), key=lambda x: x.count.value, reverse=True)
+for category in categories_sorted[:50]:
     print(f"{category.uid.value}: {category.name.value}")
