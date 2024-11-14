@@ -13,6 +13,9 @@ from core.data_storage import (
 )
 
 
+MAX_SIMILARITY_CONNECTIONS = 10
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.FileHandler("memes_processor.log"))
@@ -75,12 +78,17 @@ for i in range(len(links_grid_int)):
         # Calculate similarity value
         similarity[j] = sum([idf[category] for category in intersection if category in idf])
 
-    # sort similarity by value and use the first 1400
-    similarity_sorted = sorted(similarity.items(), key=lambda x: x[1], reverse=True)[:1400]
+    # sort similarity by value and use the first MAX_SIMILARITY_CONNECTIONS
+    similarity_sorted = sorted(similarity.items(), key=lambda x: x[1], reverse=True)[
+        :MAX_SIMILARITY_CONNECTIONS
+    ]
 
     append_connections(
         "9gag-memes-connections.bin",
-        [DataConnection(DataInt(i), DataInt(j), DataFloat(value)) for j, value in similarity_sorted],
+        [
+            DataConnection(DataInt(i), DataInt(j), DataFloat(value))
+            for j, value in similarity_sorted
+        ],
     )
     logger.info(f"{log_prefix()} Processed post {i}th with {len(similarity_sorted)} connections")
 
