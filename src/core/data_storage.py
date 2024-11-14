@@ -52,7 +52,7 @@ class DataFloat:
         return 4
 
     def deserialize(data: bytes) -> "DataFloat":
-        return DataFloat(struct.unpack("f", data)[0])
+        return DataFloat(struct.unpack("f", data[:4])[0])
 
     def __str__(self) -> str:
         return str(self.value)
